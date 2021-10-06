@@ -1,9 +1,7 @@
-<<<<<<< HEAD
+
 # React-Signup-Page
-<<<<<<< HEAD
+
 A single signup page application with Email and Password validation
-=======
-A single page signup page with Email and Password validation
 =======
 # Getting Started with Create React App
 
