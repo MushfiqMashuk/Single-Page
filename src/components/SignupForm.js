@@ -1,4 +1,9 @@
+import { child, getDatabase, push, ref, update } from "firebase/database";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import "../firebase";
+import app from "../firebase";
+import validateEmail from "../handlers/validateEmail";
 //import { useHistory } from "react-router-dom";
 //import { useAuth } from "../contexts/AuthContext";
 import Button from "./Button";
@@ -12,53 +17,76 @@ export default function SignupForm() {
   const [designation, setDesignation] = useState("User");
   const [state, setState] = useState(false);
 
-  const [dontSendAgain, setDontSendAgain] = useState(false);
+  const [submitAgain, setSubmitAgain] = useState(false);
 
-  const [error, setError] = useState("Nice job");
+  const [error, setError] = useState(false);
+  let strongPassword = false;
+  let count = 0;
+  const history = useHistory();
+
+  const userInfo = {
+    username,
+    email,
+    password,
+    designation,
+  };
 
   function checkMail() {
     if (email.includes(".edu")) {
-      console.log(designation);
       setState(true);
     }
   }
 
-  function controlSubmit () {
-    
-    console.log(dontSendAgain);
-    setDontSendAgain(true);
-    
+  async function saveUser() {
+    const db = getDatabase(app);
 
-    setTimeout(() => {
-      setDontSendAgain(false);
-    }, 2000);
+    const newPostKey = push(child(ref(db), "users")).key;
 
+    const updates = {};
+    updates["/users/" + newPostKey] = userInfo;
+
+    try {
+      await update(ref(db), updates);
+      history.push("/users");
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  // function controlSubmit() {
+  //   console.log(dontSendAgain);
+
+  // }
+
+  setTimeout(() => (count = 0), 10000);
 
   function handleSubmit(e) {
     e.preventDefault();
+    count += 1;
 
-    
+    if (count > 1) {
+      setSubmitAgain(true);
+      setPassword("");
 
-    // const userInfo = {
-    //   username,
-    //   email,
-    //   password,
-    //   designation,
-    // };
+      setTimeout(() => {
+        setSubmitAgain(false);
+      }, 90000);
+    }
 
-    // localStorage.setItem(email, userInfo);
-
-    localStorage.setItem("name", username);
-    localStorage.setItem("email", email);
-    localStorage.setItem("designation", designation);
-    localStorage.setItem("password", password);
-
-    //console.log(localStorage.getItem(email));
+    if (validateEmail(email) && strongPassword) {
+      saveUser();
+    } else {
+      setError("Enter a valid email address or a strong password!");
+    }
   }
 
-  function validatePassword () {
-    
+  function handlePassword(e) {
+    if (submitAgain) {
+      alert("You can not enter password for 90 seconds!");
+    }
+  }
+
+  function validatePassword() {
     setTimeout(() => {
       const newPassword = password.trim();
       const lowerCaseLetters = /[a-z]/g;
@@ -77,33 +105,12 @@ export default function SignupForm() {
       } else if (newPassword.length < 8) {
         setError("Password must be 8 characters long!");
       } else {
+        strongPassword = true;
         setError(false);
         setPassword(newPassword);
       }
-    }, 1000);
+    }, 500);
   }
-
-  //const [error, setError] = useState();
-  //const [loading, setLoading] = useState();
-
-  //   const { signup } = useAuth();
-  //   const history = useHistory();
-
-  //   async function handleSubmit(e) {
-  //     e.preventDefault();
-
-  //     try {
-  //       setError("");
-  //       setLoading(true);
-
-  //       await signup(email, password, username);
-  //       history.push("/");
-  //     } catch (err) {
-  //       console.log(err);
-  //       setLoading(false);
-  //       setError("Failed to create an Account!");
-  //     }
-  //   }
 
   return (
     <Form style={{ height: "500px" }} onSubmit={handleSubmit}>
@@ -139,33 +146,47 @@ export default function SignupForm() {
         </select>
       )}
 
-      {error && <p className="error">{error}</p>}
+      {submitAgain ? (
+        <TextInput
+          onClick={handlePassword}
+          required
+          type="password"
+          placeholder="Enter Password"
+          icon="lock"
+          value=""
+          onKeyUp={handlePassword}
+        />
+      ) : (
+        <TextInput
+          onClick={handlePassword}
+          required
+          type="password"
+          placeholder="Enter Password"
+          icon="lock"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyUp={() => validatePassword()}
+        />
+      )}
 
-      <TextInput
-        required
-        type="password"
-        placeholder="Enter Password"
-        icon="lock"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyUp={() => validatePassword()}
-      />
-
-      <Button type="submit" disabled={dontSendAgain} onClick={controlSubmit}>
+      <Button type="submit">
         <span>Submit Now</span>
       </Button>
-      <button
-        onClick={() => {
-          console.log(localStorage.getItem("name"));
-          console.log(localStorage.getItem("email"));
-          console.log(localStorage.getItem("designation"));
-          console.log(localStorage.getItem("password"));
-        }}
-      >
-        GET Data
-      </button>
 
-      {/* {error && <p className="error">{error}</p>} */}
+      {error && !(password === "") && (
+        <p
+          style={{
+            backgroundColor: "#ffc0c7",
+            padding: "0.02rem 1.2rem",
+            marginTop: "10px",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {error}
+        </p>
+      )}
     </Form>
   );
 }
