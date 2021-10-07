@@ -21,7 +21,7 @@ export default function SignupForm() {
   const [submitAgain, setSubmitAgain] = useState(false);
 
   const [error, setError] = useState(false);
-  
+
   let count = 0;
   const history = useHistory();
 
@@ -138,11 +138,9 @@ export default function SignupForm() {
       {state && (
         <select
           value={designation}
-          onChange={(e) => {
-            setDesignation(e.target.value);
-            console.log(designation);
-          }}
+          onChange={(e) => setDesignation(e.target.value)}
         >
+          <option value="">Select</option>
           <option value="lecturer">Lecturer</option>
           <option value="student">Student</option>
         </select>
