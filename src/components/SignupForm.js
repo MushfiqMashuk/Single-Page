@@ -16,11 +16,12 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [designation, setDesignation] = useState("User");
   const [state, setState] = useState(false);
+  const [strongPassword, setStrongPassword] = useState(false);
 
   const [submitAgain, setSubmitAgain] = useState(false);
 
   const [error, setError] = useState(false);
-  let strongPassword = false;
+  
   let count = 0;
   const history = useHistory();
 
@@ -105,7 +106,8 @@ export default function SignupForm() {
       } else if (newPassword.length < 8) {
         setError("Password must be 8 characters long!");
       } else {
-        strongPassword = true;
+        setStrongPassword(true);
+        console.log(strongPassword);
         setError(false);
         setPassword(newPassword);
       }
