@@ -8,7 +8,7 @@ export default function Nav() {
       <ul>
         <li>
           <Link to="/" className={classes.brand}>
-            <h3>Universe is Beautiful</h3>
+            <h3>Welcome to the Milkyway Galaxy</h3>
           </Link>
         </li>
       </ul>
