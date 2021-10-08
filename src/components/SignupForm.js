@@ -137,6 +137,7 @@ export default function SignupForm() {
 
       {state && (
         <select
+          required
           value={designation}
           onChange={(e) => setDesignation(e.target.value)}
         >
