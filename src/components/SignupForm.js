@@ -141,7 +141,7 @@ export default function SignupForm() {
           value={designation}
           onChange={(e) => setDesignation(e.target.value)}
         >
-          <option value="">Select</option>
+          <option value="">Select Designation</option>
           <option value="lecturer">Lecturer</option>
           <option value="student">Student</option>
         </select>

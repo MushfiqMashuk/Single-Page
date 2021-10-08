@@ -8,7 +8,7 @@ export default function Users() {
     <>
       {loading && <h3>Loading...</h3>}
       {error && <h3>There is an error!</h3>}
-      {users && (
+      {!loading && !error && users && (
         <div>
           <table className={classes.users}>
             <thead>
